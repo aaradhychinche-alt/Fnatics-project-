@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Code, BarChart2, Trophy, Zap } from 'lucide-react';
+import { ArrowRight, Code, BarChart2, Trophy, Zap, Gift, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import ShaderBackground from '../components/ui/shader-background';
 
@@ -44,7 +44,7 @@ const LandingPage = () => {
 
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 px-6 overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px] -z-10" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-600/10 rounded-full blur-[80px] -z-10" />
 
                 <div className="container mx-auto text-center max-w-4xl">
                     <motion.div
@@ -83,15 +83,15 @@ const LandingPage = () => {
                         >
                             <div className="h-full w-full bg-gradient-to-br from-card to-background p-8 grid grid-cols-3 gap-6 opacity-80">
                                 <div className="col-span-1 space-y-4">
-                                    <div className="h-32 rounded-lg bg-white/5 animate-pulse" />
-                                    <div className="h-20 rounded-lg bg-white/5 animate-pulse" />
-                                    <div className="h-20 rounded-lg bg-white/5 animate-pulse" />
+                                    <div className="h-32 rounded-lg bg-white/5" />
+                                    <div className="h-20 rounded-lg bg-white/5" />
+                                    <div className="h-20 rounded-lg bg-white/5" />
                                 </div>
                                 <div className="col-span-2 space-y-4">
-                                    <div className="h-64 rounded-lg bg-white/5 animate-pulse" />
+                                    <div className="h-64 rounded-lg bg-white/5" />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="h-32 rounded-lg bg-white/5 animate-pulse" />
-                                        <div className="h-32 rounded-lg bg-white/5 animate-pulse" />
+                                        <div className="h-32 rounded-lg bg-white/5" />
+                                        <div className="h-32 rounded-lg bg-white/5" />
                                     </div>
                                 </div>
                             </div>
@@ -100,7 +100,7 @@ const LandingPage = () => {
                             <motion.div
                                 animate={{ y: [-10, 10, -10] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute top-10 right-10 p-4 bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 rounded-xl"
+                                className="absolute top-10 right-10 p-4 bg-indigo-500/20 backdrop-blur-sm border border-indigo-500/30 rounded-xl will-change-transform"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
@@ -116,7 +116,7 @@ const LandingPage = () => {
                             <motion.div
                                 animate={{ y: [10, -10, 10] }}
                                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                className="absolute bottom-20 left-20 p-4 bg-purple-500/20 backdrop-blur-md border border-purple-500/30 rounded-xl"
+                                className="absolute bottom-20 left-20 p-4 bg-purple-500/20 backdrop-blur-sm border border-purple-500/30 rounded-xl will-change-transform"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
@@ -125,6 +125,38 @@ const LandingPage = () => {
                                     <div>
                                         <div className="text-sm font-medium text-white">Rank Up</div>
                                         <div className="text-xs text-purple-200">Top 5%</div>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            <motion.div
+                                animate={{ y: [-8, 8, -8], x: [-3, 3, -3] }}
+                                transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                                className="absolute top-32 left-16 p-4 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 rounded-xl will-change-transform"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">
+                                        <Gift size={20} />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-white">Rewards</div>
+                                        <div className="text-xs text-amber-200">5 Available</div>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            <motion.div
+                                animate={{ y: [7, -7, 7] }}
+                                transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                                className="absolute top-48 right-24 p-4 bg-cyan-500/20 backdrop-blur-sm border border-cyan-500/30 rounded-xl will-change-transform"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+                                        <Sparkles size={20} />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-white">XP Points</div>
+                                        <div className="text-xs text-cyan-200">2,450 XP</div>
                                     </div>
                                 </div>
                             </motion.div>
