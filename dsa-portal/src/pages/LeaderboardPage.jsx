@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Crown } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { leaderboardData } from '../mockData';
+import { Card, CardContent } from '../components/ui/card';
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "../firebase-config";
 
 const RankIcon = ({ rank }) => {
     if (rank === 1) return <Crown className="text-yellow-400" size={24} />;
@@ -12,6 +13,31 @@ const RankIcon = ({ rank }) => {
 };
 
 const LeaderboardPage = () => {
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const q = query(collection(db, "students"), orderBy("leaderboardRank", "asc"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const studentsData = [];
+            querySnapshot.forEach((doc) => {
+                studentsData.push({ id: doc.id, ...doc.data() });
+            });
+            setStudents(studentsData);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <div className="text-center space-y-4">
@@ -21,34 +47,34 @@ const LeaderboardPage = () => {
 
             <Card className="overflow-hidden border-none bg-transparent shadow-none">
                 <CardContent className="p-0 space-y-2">
-                    {leaderboardData.map((user, index) => (
+                    {students.map((student, index) => (
                         <motion.div
-                            key={user.rank}
+                            key={student.id || index}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className={`flex items-center p-4 rounded-xl border transition-all hover:scale-[1.01] ${user.isCurrentUser
-                                    ? 'bg-primary/10 border-primary/50 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
-                                    : 'bg-card/50 border-border hover:bg-card/80'
-                                }`}
+                            className={`flex items-center p-4 rounded-xl border transition-all hover:scale-[1.01] bg-card/50 border-border hover:bg-card/80`}
                         >
                             <div className="flex items-center justify-center w-12">
-                                <RankIcon rank={user.rank} />
+                                <RankIcon rank={student.leaderboardRank} />
                             </div>
 
                             <div className="flex items-center gap-4 flex-1">
-                                <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-white/10" />
+                                <img
+                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${student.name}`}
+                                    alt={student.name}
+                                    className="w-10 h-10 rounded-full border border-white/10 bg-zinc-800"
+                                />
                                 <div>
                                     <div className="font-semibold flex items-center gap-2">
-                                        {user.name}
-                                        {user.isCurrentUser && <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">You</span>}
+                                        {student.name}
                                     </div>
-                                    <div className="text-xs text-muted-foreground">{user.solved} questions solved</div>
+                                    <div className="text-xs text-muted-foreground">{student.solvedCount} questions solved</div>
                                 </div>
                             </div>
 
                             <div className="text-right">
-                                <div className="font-bold text-lg text-primary">{user.score}</div>
+                                <div className="font-bold text-lg text-primary">{student.solvedCount * 10}</div>
                                 <div className="text-xs text-muted-foreground">Points</div>
                             </div>
                         </motion.div>

@@ -19,8 +19,31 @@ const DifficultyBadge = ({ difficulty }) => {
     );
 };
 
+import { auth } from '../firebase-config';
+import { updateUserStats } from '../firebase-utils';
+
 const DSAQuestionsPage = () => {
     const { dsaQuestions, toggleDsaQuestionStatus } = useMockData();
+
+    const handleToggleStatus = async (question) => {
+        // Optimistic UI update
+        toggleDsaQuestionStatus(question.id);
+
+        // If we are marking as DONE (current status is not completed)
+        if (question.status !== 'completed') {
+            if (auth.currentUser) {
+                try {
+                    await updateUserStats(auth.currentUser.uid, {
+                        questionTitle: question.title,
+                        questionTopic: question.topic
+                    });
+                } catch (error) {
+                    console.error("Failed to update stats:", error);
+                    // Optionally revert UI change here if needed
+                }
+            }
+        }
+    };
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
@@ -85,7 +108,7 @@ const DSAQuestionsPage = () => {
                                     <Button
                                         variant={question.status === 'completed' ? "outline" : "secondary"}
                                         size="sm"
-                                        onClick={() => toggleDsaQuestionStatus(question.id)}
+                                        onClick={() => handleToggleStatus(question)}
                                         className="w-full md:w-auto"
                                     >
                                         {question.status === 'completed' ? "Mark Undone" : "Mark Done"}

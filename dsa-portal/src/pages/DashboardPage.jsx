@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Target, CheckCircle, Flame, ArrowUpRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -6,6 +6,8 @@ import { Progress } from '../components/ui/progress';
 import { Button } from '../components/ui/button';
 import { recentActivity, recommendedQuestions } from '../mockData';
 import { useMockData } from '../context/MockDataContext';
+import { doc, getDoc } from "firebase/firestore";
+import { db, auth } from "../firebase-config";
 
 // Generate 30 days of streak data (1 = active, 0 = inactive)
 const generateStreakData = () => {
@@ -72,7 +74,7 @@ const StatCard = ({ title, value, subtext, icon: Icon, color, showStreakCalendar
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <div 
+        <div
             className="relative"
             onMouseEnter={() => showStreakCalendar && setIsHovered(true)}
             onMouseLeave={() => showStreakCalendar && setIsHovered(false)}
@@ -95,7 +97,63 @@ const StatCard = ({ title, value, subtext, icon: Icon, color, showStreakCalendar
 };
 
 const DashboardPage = () => {
-    const { stats, topics } = useMockData();
+    // const { stats } = useMockData(); // Removed mock data usage
+    const [stats, setStats] = useState({
+        totalQuestions: 0,
+        accuracy: 0,
+        streak: 0,
+        solvedToday: 0,
+        dailyGoal: 5
+    });
+
+    const [topics, setTopics] = useState([
+        { name: "Arrays", progress: 0 },
+        { name: "DP", progress: 0 },
+        { name: "Trees", progress: 0 },
+        { name: "Graphs", progress: 0 },
+        { name: "Recursion", progress: 0 },
+        { name: "Bitmasking", progress: 0 }
+    ]);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (auth.currentUser) {
+                try {
+                    const docRef = doc(db, "users", auth.currentUser.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        console.log("Dashboard stats loaded:", data);
+
+                        // Update Stats
+                        setStats({
+                            totalQuestions: data.solvedCount || 0,
+                            accuracy: data.accuracy || 0, // Assuming accuracy is stored or 0
+                            streak: data.streak || 0,
+                            solvedToday: data.dailyGoalProgress || 0,
+                            dailyGoal: data.dailyGoalTotal || 5
+                        });
+
+                        // Update Topics
+                        if (data.dsaProgress) {
+                            const progress = data.dsaProgress;
+                            setTopics([
+                                { name: "Arrays", progress: progress.arrays || 0 },
+                                { name: "DP", progress: progress.dp || 0 },
+                                { name: "Trees", progress: progress.trees || 0 },
+                                { name: "Graphs", progress: progress.graphs || 0 },
+                                { name: "Recursion", progress: progress.recursion || 0 },
+                                { name: "Bitmasking", progress: progress.bitmasking || 0 }
+                            ]);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            }
+        };
+        fetchUserData();
+    }, []);
 
     return (
         <div className="space-y-8">
@@ -118,14 +176,14 @@ const DashboardPage = () => {
                 />
                 <StatCard
                     title="Accuracy"
-                    value="78.5%"
+                    value={`${stats.accuracy}%`}
                     subtext="+2.1% improvement"
                     icon={Target}
                     color="#3b82f6"
                 />
                 <StatCard
                     title="Current Streak"
-                    value="12 Days"
+                    value={`${stats.streak} Days`}
                     subtext="Keep it up!"
                     icon={Flame}
                     color="#f59e0b"
