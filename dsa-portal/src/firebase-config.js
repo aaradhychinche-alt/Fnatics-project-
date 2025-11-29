@@ -4,13 +4,13 @@ import { getFirestore, serverTimestamp } from 'firebase/firestore';
 
 // Firebase configuration object
 const firebaseConfig = {
-  apiKey: "AIzaSyBgGeA4GMQFi-1vTReMGnO6-lK6AKWZTVQ",
-  authDomain: "vedam-dsa-portal.firebaseapp.com",
-  projectId: "vedam-dsa-portal",
-  storageBucket: "vedam-dsa-portal.firebasestorage.app",
-  messagingSenderId: "117185109178",
-  appId: "1:117185109178:web:aaa12448b14d170df1f683",
-  measurementId: "G-W97VBJKKJP"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase app
