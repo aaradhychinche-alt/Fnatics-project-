@@ -32,7 +32,7 @@ const LandingPage = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
                             <Code size={18} />
                         </div>
-                        <span>DSA.ai</span>
+                        <span>CodeTrack</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <Link to="/login">
