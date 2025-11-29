@@ -13,11 +13,11 @@ export const MockDataProvider = ({ children }) => {
     // Mock DSA Questions Data
     // In a real app, this would be fetched from a backend API (e.g., /api/questions)
     const [dsaQuestions, setDsaQuestions] = useState([
-        { id: 101, title: "Implement Binary Search", topic: "Arrays", subtopic: "Searching", difficulty: "Easy", classDate: "2023-11-01", status: "pending", externalLink: "https://learn.vedam.org/problems/binary-search" },
-        { id: 102, title: "Reverse Linked List", topic: "LinkedList", subtopic: "Basics", difficulty: "Medium", classDate: "2023-11-03", status: "completed", externalLink: "https://learn.vedam.org/problems/reverse-linked-list" },
-        { id: 103, title: "Valid Anagram", topic: "Strings", subtopic: "Hash Map", difficulty: "Easy", classDate: "2023-11-05", status: "pending", externalLink: "https://learn.vedam.org/problems/valid-anagram" },
-        { id: 104, title: "Level Order Traversal", topic: "Trees", subtopic: "BFS", difficulty: "Medium", classDate: "2023-11-08", status: "pending", externalLink: "https://learn.vedam.org/problems/level-order-traversal" },
-        { id: 105, title: "Climbing Stairs", topic: "DP", subtopic: "1D DP", difficulty: "Easy", classDate: "2023-11-10", status: "completed", externalLink: "https://learn.vedam.org/problems/climbing-stairs" },
+        { id: 101, title: "Implement Binary Search", topic: "Arrays", subtopic: "Searching", difficulty: "Easy", classDate: "2023-11-01", status: "pending", externalLink: "https://learn.vedam.org/course-item?item-id=68efdb4d82c2287143b3b028" },
+        { id: 102, title: "Java Arrays Majority Element", topic: "LinkedList", subtopic: "Basics", difficulty: "Medium", classDate: "2023-11-03", status: "completed", externalLink: "https://learn.vedam.org/course-item?item-id=6927e9a8ab219321a5b3d8fb" },
+        { id: 103, title: "Reverse String", topic: "Strings", subtopic: "Hash Map", difficulty: "Easy", classDate: "2023-11-05", status: "pending", externalLink: "https://learn.vedam.org/course-item?item-id=69078863c1e78bb048c1557c" },
+        { id: 104, title: "BITS OddEven", topic: "Trees", subtopic: "Bit Manipulation", difficulty: "Medium", classDate: "2023-11-08", status: "pending", externalLink: "https://learn.vedam.org/course-item?item-id=691b27edf95b36d02d1467d8" },
+        { id: 105, title: "Find Median from Data Stream", topic: "PQ", subtopic: "PQ1", difficulty: "Hard", classDate: "2023-11-10", status: "completed", externalLink: "https://learn.vedam.org/course-item?item-id=6915e171c0902820c4739345" },
     ]);
 
     // Mock LeetCode Recommendations Data

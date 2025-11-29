@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { login, signUp } from '../firebase-utils';
 import { createUserDocument } from '../utils/createUserDocument';
 import { auth } from '../firebase-config';
+import ShaderBackground from '../components/ui/shader-background';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -58,7 +59,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-6">
+    <div className="min-h-screen flex items-center justify-center bg-background landing-bg text-foreground px-6">
+      <ShaderBackground />
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-card/60 backdrop-blur-xl p-8 shadow-xl">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold">Welcome back</h1>

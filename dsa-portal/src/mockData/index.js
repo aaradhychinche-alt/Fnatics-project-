@@ -13,51 +13,51 @@ export const currentUser = {
 export const rewards = [
   {
     id: 1,
-    title: "Premium Theme Pack",
-    description: "Unlock exclusive dark themes and color schemes for your dashboard",
-    xpCost: 500,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
-    category: "Cosmetic"
+    title: "1 Month Free Cursor Pro",
+    description: "Get full access to Cursor Pro AI code editor for one month",
+    xpCost: 1500,
+    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
+    category: "Subscription"
   },
   {
     id: 2,
-    title: "Code Mentor Session",
-    description: "1-hour one-on-one mentoring session with a senior developer",
-    xpCost: 2000,
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-    category: "Learning"
+    title: "1 Month Free LinkedIn Premium",
+    description: "Unlock LinkedIn Premium features including InMail and advanced insights",
+    xpCost: 1800,
+    image: "https://images.unsplash.com/photo-1611944212129-29977ae1398c?w=400&h=300&fit=crop",
+    category: "Subscription"
   },
   {
     id: 3,
-    title: "Certificate Badge",
-    description: "Display a verified achievement badge on your profile",
-    xpCost: 750,
-    image: "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=400&h=300&fit=crop",
-    category: "Achievement"
+    title: "1 Month Free GitHub Copilot",
+    description: "AI-powered code completion and suggestions in your IDE",
+    xpCost: 1600,
+    image: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=400&h=300&fit=crop",
+    category: "Subscription"
   },
   {
     id: 4,
-    title: "Priority Support",
-    description: "Get priority support for 1 month with faster response times",
+    title: "1 Month Free ChatGPT Plus",
+    description: "Access GPT-4 with priority access and faster response times",
     xpCost: 1200,
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
-    category: "Service"
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop",
+    category: "Subscription"
   },
   {
     id: 5,
-    title: "Custom Avatar Frame",
-    description: "Unlock animated frames and borders for your profile picture",
-    xpCost: 600,
-    image: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&h=300&fit=crop",
-    category: "Cosmetic"
+    title: "1 Month Free Gemini Advanced",
+    description: "Get Google's most capable AI model with extended features",
+    xpCost: 2000,
+    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop",
+    category: "Subscription"
   },
   {
     id: 6,
-    title: "Problem Unlocks (10)",
-    description: "Get access to 10 premium interview questions",
-    xpCost: 1500,
-    image: "https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?w=400&h=300&fit=crop",
-    category: "Content"
+    title: "1 Month Free LeetCode Premium",
+    description: "Access premium interview questions and company-specific content",
+    xpCost: 2500,
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop",
+    category: "Subscription"
   }
 ];
 
