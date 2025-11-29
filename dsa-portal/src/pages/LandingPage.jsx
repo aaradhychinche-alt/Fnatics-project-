@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Code, BarChart2, Trophy, Zap } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import ShaderBackground from '../components/ui/shader-background';
 
 const FeatureCard = ({ icon: Icon, title, description, delay }) => (
     <motion.div
@@ -22,7 +23,8 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => (
 
 const LandingPage = () => {
     return (
-        <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
+    <div className="min-h-screen bg-background landing-bg text-foreground overflow-x-hidden selection:bg-primary/30">
+            <ShaderBackground />
             {/* Navbar */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-md">
                 <div className="container mx-auto px-6 h-16 flex items-center justify-between">

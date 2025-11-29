@@ -47,6 +47,14 @@
   }
 }
 
+/* Page-scoped overrides */
+.landing-bg {
+  /* Shader background: make transparent so canvas shows through */
+  background-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
 /* Glassmorphism Utilities */
 .glass {
   background: rgba(255, 255, 255, 0.05);
