@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
+import { login, signUp } from '../firebase-utils';
+import { createUserDocument } from '../utils/createUserDocument';
+import { auth } from '../firebase-config';
 import ShaderBackground from '../components/ui/shader-background';
 
 const LoginPage = () => {
@@ -8,18 +11,51 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isEmailValid = useMemo(() => /^[^@\s]+@vedamsot\.org$/i.test(email.trim()), [email]);
-  const canSubmit = isEmailValid && password.trim().length > 0;
+  const isEmailValid = useMemo(() => {
+    return /^[^@\s]+@(vedam\.org|vedamschool\.tech|vedamsot\.org)$/i.test(email.trim());
+  }, [email]);
 
-  const handleSubmit = (e) => {
+  const canSubmit = isEmailValid && password.trim().length > 0 && !isLoading;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isEmailValid) {
-      setError('Please use your organization email ending with @vedamsot.org');
+      setError('Only Vedam students can register.');
       return;
     }
     setError('');
-    navigate('/dashboard');
+    setIsLoading(true);
+
+    try {
+      await login(email, password);
+      await createUserDocument(auth.currentUser);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error("Login error:", err);
+
+      // Check for user-not-found error to trigger auto-signup
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+        try {
+          // Attempt to create a new account
+          await signUp(email, password);
+          await createUserDocument(auth.currentUser);
+          navigate('/dashboard');
+        } catch (signupErr) {
+          console.error("Signup error:", signupErr);
+          if (signupErr.code === 'auth/email-already-in-use') {
+            setError('Incorrect password. Please try again.');
+          } else {
+            setError('Failed to create account. ' + signupErr.message);
+          }
+        }
+      } else {
+        setError('Failed to login. Please check your credentials.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,7 +74,7 @@ const LoginPage = () => {
               id="email"
               type="email"
               required
-              placeholder="example@vedamsot.org"
+              placeholder="example@vedam.org"
               className={`w-full h-11 rounded-md bg-background/60 border px-3 outline-none focus:ring-2 focus:ring-primary/40 ${email && !isEmailValid ? 'border-red-500/50' : 'border-white/10'}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +107,7 @@ const LoginPage = () => {
           </div>
 
           <Button type="submit" variant="neon" className="w-full h-11" disabled={!canSubmit}>
-            {canSubmit ? 'Sign In' : 'Enter valid email to continue'}
+            {isLoading ? 'Signing in...' : (canSubmit ? 'Sign In' : 'Enter valid email to continue')}
           </Button>
         </form>
 
