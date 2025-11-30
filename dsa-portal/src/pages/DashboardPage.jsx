@@ -7,7 +7,7 @@
  * 
  * Key Features:
  * - Fetches real-time user data from Firestore.
- * - Visualizes performance using 'PerformanceChart'.
+ * - Visualizes performance using 'PerformanceOverview' (Recharts).
  * - Shows topic-wise progress bars.
  * - Displays daily streak and goals.
  * - Lists recommended questions (currently mock data, can be connected to logic).
@@ -15,7 +15,7 @@
  * State Management:
  * - stats: Holds aggregated user statistics (total solved, accuracy, streak, etc.).
  * - topics: Holds progress data for each DSA topic.
- * - performanceHistory: Holds the 7-day score history for the chart.
+ * - performanceData: Holds the array of performance objects for the graph.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -26,7 +26,7 @@ import { Activity, Target, CheckCircle, Flame, ArrowUpRight } from 'lucide-react
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Progress } from '../components/ui/progress';
 import { Button } from '../components/ui/button';
-import PerformanceChart from '../components/PerformanceChart';
+import PerformanceOverview from '../components/PerformanceOverview';
 
 // Data / Utils
 import { recommendedQuestions } from '../mockData'; // Keeping mock recommendations for now
@@ -133,7 +133,23 @@ const DashboardPage = () => {
     ]);
 
     // State for performance history graph
-    const [performanceHistory, setPerformanceHistory] = useState(null);
+    const [performanceData, setPerformanceData] = useState([]);
+
+    // Helper to generate mock performance data if none exists
+    const generateMockPerformanceData = () => {
+        const data = [];
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            data.push({
+                date: d.toISOString().split('T')[0],
+                solved: Math.floor(Math.random() * 10) + 1,
+                avg: Math.floor(Math.random() * 5) + 3
+            });
+        }
+        return data;
+    };
 
     // Fetch user data on mount
     useEffect(() => {
@@ -169,12 +185,31 @@ const DashboardPage = () => {
                         }
 
                         // Update Performance History
-                        if (data.performanceHistory) {
-                            setPerformanceHistory(data.performanceHistory);
+                        // Expecting 'performance' array in Firestore: [{ date, solved, avg }, ...]
+                        // If 'performanceHistory' object exists (from previous seed), we can try to convert it or just use mock for now if 'performance' array is missing.
+                        if (data.performance && Array.isArray(data.performance)) {
+                            setPerformanceData(data.performance);
+                        } else if (data.performanceHistory) {
+                            // Fallback: Convert old object format to array if needed, or just use mock
+                            // Object format was: { "2025-11-21": 80 } (score)
+                            // We need { date, solved, avg }
+                            const converted = Object.entries(data.performanceHistory).map(([date, score]) => ({
+                                date,
+                                solved: Math.floor(score / 10), // Mock solved count derived from score
+                                avg: Math.floor(Math.random() * 10) // Mock avg
+                            })).sort((a, b) => new Date(a.date) - new Date(b.date));
+                            setPerformanceData(converted);
+                        } else {
+                            // No data found, use mock
+                            setPerformanceData(generateMockPerformanceData());
                         }
+                    } else {
+                        // New user or no doc, use mock
+                        setPerformanceData(generateMockPerformanceData());
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
+                    setPerformanceData(generateMockPerformanceData());
                 }
             }
         };
@@ -228,15 +263,10 @@ const DashboardPage = () => {
             {/* Main Content Grid */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
 
-                {/* Performance Chart (Activity Overview) */}
-                <Card className="col-span-4">
-                    <CardHeader>
-                        <CardTitle>Performance Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2">
-                        <PerformanceChart userHistory={performanceHistory} />
-                    </CardContent>
-                </Card>
+                {/* Performance Overview Graph (Recharts) */}
+                <div className="col-span-4">
+                    <PerformanceOverview data={performanceData} />
+                </div>
 
                 {/* Topic Mastery Progress */}
                 <Card className="col-span-3">
