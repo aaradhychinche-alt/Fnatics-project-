@@ -18,15 +18,14 @@
 
 import React from 'react';
 import {
-    LineChart,
-    Line,
+    AreaChart,
+    Area,
     XAxis,
     YAxis,
-    CartesianGrid,
     Tooltip,
-    ResponsiveContainer,
-    Area
-} from 'recharts';
+    CartesianGrid,
+    ResponsiveContainer
+} from "recharts";
 
 // Custom Tooltip Component
 // Displays detailed info when hovering over a data point
