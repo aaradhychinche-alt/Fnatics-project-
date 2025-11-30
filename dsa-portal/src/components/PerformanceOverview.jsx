@@ -59,8 +59,8 @@ const PerformanceOverview = ({ data }) => {
     }
 
     return (
-        <div className="w-full h-[300px] bg-card/50 backdrop-blur-sm rounded-xl border border-white/5 shadow-lg p-4">
-            <div className="flex items-center justify-between mb-4 px-2">
+        <div className="w-full h-[300px] bg-card/50 backdrop-blur-sm rounded-xl border border-white/5 shadow-lg p-4 flex flex-col">
+            <div className="flex items-center justify-between mb-4 px-2 shrink-0">
                 <h3 className="text-lg font-semibold text-foreground">Performance Overview</h3>
                 <div className="flex gap-4 text-xs">
                     <div className="flex items-center gap-1.5">
@@ -74,67 +74,73 @@ const PerformanceOverview = ({ data }) => {
                 </div>
             </div>
 
-            <ResponsiveContainer width="100%" height="85%">
-                <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    {/* Gradients for lines */}
-                    <defs>
-                        <linearGradient id="userGradient" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#8B5CF6" />
-                            <stop offset="100%" stopColor="#6366F1" />
-                        </linearGradient>
-                        <linearGradient id="avgGradient" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#EC4899" />
-                            <stop offset="100%" stopColor="#F43F5E" />
-                        </linearGradient>
-                    </defs>
+            <div className="flex-1 min-h-0 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        {/* Gradients for lines */}
+                        <defs>
+                            <linearGradient id="userGradient" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stopColor="#8B5CF6" />
+                                <stop offset="100%" stopColor="#6366F1" />
+                            </linearGradient>
+                            <linearGradient id="avgGradient" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stopColor="#EC4899" />
+                                <stop offset="100%" stopColor="#F43F5E" />
+                            </linearGradient>
+                        </defs>
 
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
 
-                    <XAxis
-                        dataKey="date"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#94a3b8', fontSize: 10 }}
-                        dy={10}
-                        tickFormatter={(value) => {
-                            // Format date to "Mon", "Tue" or "Nov 21"
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { weekday: 'short' });
-                        }}
-                    />
+                        <XAxis
+                            dataKey="date"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#94a3b8', fontSize: 10 }}
+                            dy={10}
+                            tickFormatter={(value) => {
+                                try {
+                                    const date = new Date(value);
+                                    if (isNaN(date.getTime())) return value; // Return original if invalid
+                                    return date.toLocaleDateString('en-US', { weekday: 'short' });
+                                } catch (e) {
+                                    return value;
+                                }
+                            }}
+                        />
 
-                    <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#94a3b8', fontSize: 10 }}
-                    />
+                        <YAxis
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#94a3b8', fontSize: 10 }}
+                        />
 
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} />
 
-                    {/* User Line */}
-                    <Line
-                        type="monotone"
-                        dataKey="solved"
-                        stroke="url(#userGradient)"
-                        strokeWidth={3}
-                        dot={{ r: 4, fill: '#1e1b4b', stroke: '#8B5CF6', strokeWidth: 2 }}
-                        activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#fff', strokeWidth: 2, className: "animate-pulse" }}
-                        animationDuration={1500}
-                    />
+                        {/* User Line */}
+                        <Line
+                            type="monotone"
+                            dataKey="solved"
+                            stroke="url(#userGradient)"
+                            strokeWidth={3}
+                            dot={{ r: 4, fill: '#1e1b4b', stroke: '#8B5CF6', strokeWidth: 2 }}
+                            activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#fff', strokeWidth: 2, className: "animate-pulse" }}
+                            animationDuration={1500}
+                        />
 
-                    {/* Class Average Line */}
-                    <Line
-                        type="monotone"
-                        dataKey="avg"
-                        stroke="url(#avgGradient)"
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
-                        dot={false}
-                        activeDot={{ r: 4, fill: '#EC4899' }}
-                        animationDuration={1500}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
+                        {/* Class Average Line */}
+                        <Line
+                            type="monotone"
+                            dataKey="avg"
+                            stroke="url(#avgGradient)"
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            dot={false}
+                            activeDot={{ r: 4, fill: '#EC4899' }}
+                            animationDuration={1500}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 };
