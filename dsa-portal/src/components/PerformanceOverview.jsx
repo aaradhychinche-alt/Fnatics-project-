@@ -16,6 +16,8 @@
  * - data: Array of objects containing { date, solved, avg }.
  */
 
+// Recharts imports fixed to prevent ReferenceError: AreaChart is not defined
+
 import React from 'react';
 import {
     AreaChart,
