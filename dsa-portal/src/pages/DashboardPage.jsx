@@ -1,23 +1,47 @@
+/**
+ * FILE: DashboardPage.jsx
+ * 
+ * Purpose:
+ * This is the main dashboard view for the authenticated user.
+ * It displays key metrics, performance graphs, topic mastery, and recommended questions.
+ * 
+ * Key Features:
+ * - Fetches real-time user data from Firestore.
+ * - Visualizes performance using 'PerformanceChart'.
+ * - Shows topic-wise progress bars.
+ * - Displays daily streak and goals.
+ * - Lists recommended questions (currently mock data, can be connected to logic).
+ * 
+ * State Management:
+ * - stats: Holds aggregated user statistics (total solved, accuracy, streak, etc.).
+ * - topics: Holds progress data for each DSA topic.
+ * - performanceHistory: Holds the 7-day score history for the chart.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Target, CheckCircle, Flame, ArrowUpRight } from 'lucide-react';
+
+// UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Progress } from '../components/ui/progress';
 import { Button } from '../components/ui/button';
-import { recentActivity, recommendedQuestions } from '../mockData';
-import { useMockData } from '../context/MockDataContext';
+import PerformanceChart from '../components/PerformanceChart';
+
+// Data / Utils
+import { recommendedQuestions } from '../mockData'; // Keeping mock recommendations for now
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase-config";
 
-// Generate 30 days of streak data (1 = active, 0 = inactive)
+// Streak Calendar Component (Internal helper)
+// Visualizes the last 30 days of activity
 const generateStreakData = () => {
     const data = [];
     const today = new Date();
     for (let i = 29; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
-        // Simulate streak pattern: mostly active with occasional gaps
-        const isActive = Math.random() > 0.3;
+        const isActive = Math.random() > 0.3; // Simulation
         data.push({
             date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
             active: isActive,
@@ -56,20 +80,12 @@ const StreakCalendar = () => {
                     );
                 })}
             </div>
-            <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
-                <span>Less</span>
-                <div className="flex gap-1">
-                    <div className="w-2.5 h-2.5 rounded-sm bg-white/5" />
-                    <div className="w-2.5 h-2.5 rounded-sm bg-green-500/30" />
-                    <div className="w-2.5 h-2.5 rounded-sm bg-green-500/60" />
-                    <div className="w-2.5 h-2.5 rounded-sm bg-green-500/90" />
-                </div>
-                <span>More</span>
-            </div>
         </div>
     );
 };
 
+// StatCard Component
+// Reusable card for displaying single metrics
 const StatCard = ({ title, value, subtext, icon: Icon, color, showStreakCalendar }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -97,7 +113,7 @@ const StatCard = ({ title, value, subtext, icon: Icon, color, showStreakCalendar
 };
 
 const DashboardPage = () => {
-    // const { stats } = useMockData(); // Removed mock data usage
+    // State for dashboard metrics
     const [stats, setStats] = useState({
         totalQuestions: 0,
         accuracy: 0,
@@ -106,6 +122,7 @@ const DashboardPage = () => {
         dailyGoal: 5
     });
 
+    // State for topic mastery
     const [topics, setTopics] = useState([
         { name: "Arrays", progress: 0 },
         { name: "DP", progress: 0 },
@@ -115,6 +132,10 @@ const DashboardPage = () => {
         { name: "Bitmasking", progress: 0 }
     ]);
 
+    // State for performance history graph
+    const [performanceHistory, setPerformanceHistory] = useState(null);
+
+    // Fetch user data on mount
     useEffect(() => {
         const fetchUserData = async () => {
             if (auth.currentUser) {
@@ -128,7 +149,7 @@ const DashboardPage = () => {
                         // Update Stats
                         setStats({
                             totalQuestions: data.solvedCount || 0,
-                            accuracy: data.accuracy || 0, // Assuming accuracy is stored or 0
+                            accuracy: data.accuracy || 0,
                             streak: data.streak || 0,
                             solvedToday: data.dailyGoalProgress || 0,
                             dailyGoal: data.dailyGoalTotal || 5
@@ -146,6 +167,11 @@ const DashboardPage = () => {
                                 { name: "Bitmasking", progress: progress.bitmasking || 0 }
                             ]);
                         }
+
+                        // Update Performance History
+                        if (data.performanceHistory) {
+                            setPerformanceHistory(data.performanceHistory);
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
@@ -157,6 +183,7 @@ const DashboardPage = () => {
 
     return (
         <div className="space-y-8">
+            {/* Header Section */}
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                 <div className="flex items-center space-x-2">
@@ -198,34 +225,20 @@ const DashboardPage = () => {
                 />
             </div>
 
+            {/* Main Content Grid */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                {/* Activity Graph Placeholder */}
+
+                {/* Performance Chart (Activity Overview) */}
                 <Card className="col-span-4">
                     <CardHeader>
-                        <CardTitle>Activity Overview</CardTitle>
+                        <CardTitle>Performance Overview</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        <div className="h-[200px] w-full flex items-end justify-between gap-2 px-4">
-                            {recentActivity.map((day, i) => (
-                                <div key={i} className="flex flex-col items-center gap-2 w-full group">
-                                    <motion.div
-                                        initial={{ height: 0 }}
-                                        animate={{ height: `${day.count * 10}%` }}
-                                        transition={{ duration: 1, delay: i * 0.1 }}
-                                        className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/50 transition-colors relative"
-                                    >
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {day.count} Qs
-                                        </div>
-                                    </motion.div>
-                                    <span className="text-xs text-muted-foreground">{day.date.split('-')[2]}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <PerformanceChart userHistory={performanceHistory} />
                     </CardContent>
                 </Card>
 
-                {/* Weak Topics */}
+                {/* Topic Mastery Progress */}
                 <Card className="col-span-3">
                     <CardHeader>
                         <CardTitle>Topic Mastery</CardTitle>
@@ -246,7 +259,7 @@ const DashboardPage = () => {
                 </Card>
             </div>
 
-            {/* Recommended Questions */}
+            {/* Recommended Questions & Daily Challenge */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card className="col-span-2">
                     <CardHeader>
@@ -277,7 +290,7 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
 
-                {/* Quick Actions / Motivation */}
+                {/* Daily Challenge Card */}
                 <Card className="col-span-1 bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border-indigo-500/20">
                     <CardHeader>
                         <CardTitle>Daily Challenge</CardTitle>

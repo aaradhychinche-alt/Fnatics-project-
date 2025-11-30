@@ -1,3 +1,18 @@
+/**
+ * FILE: LoginPage.jsx
+ * 
+ * Purpose:
+ * Handles user authentication (Login and Signup).
+ * Enforces domain restrictions to ensure only authorized students can access.
+ * 
+ * Key Features:
+ * - Email/Password authentication via Firebase.
+ * - Domain validation regex (vedam.org, etc.).
+ * - Automatic account creation if user doesn't exist (Auto-Signup).
+ * - Creates/Syncs Firestore user document upon successful login.
+ * - 'ShaderBackground' for visual appeal.
+ */
+
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -8,15 +23,19 @@ import ShaderBackground from '../components/ui/shader-background';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+
+  // Local state for form inputs and UI status
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Memoized validation logic to check email domain in real-time
   const isEmailValid = useMemo(() => {
     return /^[^@\s]+@(vedam\.org|vedamschool\.tech|vedamsot\.org)$/i.test(email.trim());
   }, [email]);
 
+  // Disable submit if invalid
   const canSubmit = isEmailValid && password.trim().length > 0 && !isLoading;
 
   const handleSubmit = async (e) => {
@@ -29,13 +48,16 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
+      // Attempt login
       await login(email, password);
+      // Ensure Firestore document exists
       await createUserDocument(auth.currentUser);
       navigate('/dashboard');
     } catch (err) {
       console.error("Login error:", err);
 
-      // Check for user-not-found error to trigger auto-signup
+      // Auto-Signup Logic:
+      // If user not found, try to create a new account with the same credentials
       if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
         try {
           // Attempt to create a new account
@@ -110,8 +132,6 @@ const LoginPage = () => {
             {isLoading ? 'Signing in...' : (canSubmit ? 'Sign In' : 'Enter valid email to continue')}
           </Button>
         </form>
-
-
 
         <div className="mt-8 text-center">
           <Link to="/" className="text-sm text-indigo-300 hover:text-indigo-200">← Back to Home</Link>

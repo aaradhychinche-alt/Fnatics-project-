@@ -1,10 +1,32 @@
+/**
+ * FILE: DSAQuestionsPage.jsx
+ * 
+ * Purpose:
+ * Displays a list of DSA questions for the user to solve.
+ * Allows users to mark questions as "Done" or "Undone".
+ * 
+ * Key Features:
+ * - Fetches questions from 'MockDataContext' (could be replaced by Firestore).
+ * - Filters and sorts questions (UI placeholders for now).
+ * - Handles "Mark as Done" logic:
+ *   - Updates local UI state immediately (Optimistic UI).
+ *   - Calls 'updateUserStats' to update Firestore (solved count, streak, history).
+ * 
+ * Components:
+ * - DifficultyBadge: Visual indicator for question difficulty.
+ * - Card: Container for each question.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, CheckCircle2, Circle, Play, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { useMockData } from '../context/MockDataContext';
+import { auth } from '../firebase-config';
+import { updateUserStats } from '../firebase-utils';
 
+// Helper component for difficulty badges
 const DifficultyBadge = ({ difficulty }) => {
     const colors = {
         Easy: "bg-green-500/20 text-green-400 border-green-500/30",
@@ -19,27 +41,31 @@ const DifficultyBadge = ({ difficulty }) => {
     );
 };
 
-import { auth } from '../firebase-config';
-import { updateUserStats } from '../firebase-utils';
-
 const DSAQuestionsPage = () => {
     const { dsaQuestions, toggleDsaQuestionStatus } = useMockData();
 
+    // Handler for toggling question status
     const handleToggleStatus = async (question) => {
-        // Optimistic UI update
+        // Optimistic UI update: Toggle state locally first
         toggleDsaQuestionStatus(question.id);
 
         // If we are marking as DONE (current status is not completed)
+        // Note: 'toggleDsaQuestionStatus' toggles the state, so we check the *previous* state logic
+        // But here we want to trigger the update only if it *becomes* completed.
+        // The 'question' object passed here is the *old* state before toggle? 
+        // Actually, passing 'question' directly from the map means it's the current render's state.
+        // If it is NOT completed, we are marking it as completed.
         if (question.status !== 'completed') {
             if (auth.currentUser) {
                 try {
+                    // Update Firestore stats
                     await updateUserStats(auth.currentUser.uid, {
                         questionTitle: question.title,
                         questionTopic: question.topic
                     });
                 } catch (error) {
                     console.error("Failed to update stats:", error);
-                    // Optionally revert UI change here if needed
+                    // Optionally revert UI change here if needed (not implemented for simplicity)
                 }
             }
         }
@@ -47,6 +73,7 @@ const DSAQuestionsPage = () => {
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
+            {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">DSA Class Questions</h2>
@@ -58,6 +85,7 @@ const DSAQuestionsPage = () => {
                 </div>
             </div>
 
+            {/* Questions List */}
             <div className="grid gap-4">
                 {dsaQuestions.map((question, index) => (
                     <motion.div
@@ -69,12 +97,12 @@ const DSAQuestionsPage = () => {
                         <Card className={`transition-all hover:border-primary/50 ${question.status === 'completed' ? 'bg-primary/5 border-primary/20' : ''}`}>
                             <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center gap-6">
 
-                                {/* Icon / Status */}
+                                {/* Icon / Status Indicator */}
                                 <div className={`p-3 rounded-full ${question.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-secondary text-muted-foreground'}`}>
                                     {question.status === 'completed' ? <CheckCircle2 size={24} /> : <BookOpen size={24} />}
                                 </div>
 
-                                {/* Content */}
+                                {/* Question Content */}
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-center gap-3 flex-wrap">
                                         <h3 className={`text-lg font-semibold ${question.status === 'completed' ? 'text-muted-foreground line-through' : ''}`}>
@@ -98,13 +126,14 @@ const DSAQuestionsPage = () => {
 
                                 {/* Actions */}
                                 <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                                    {/* External Link Button - No internal playground */}
+                                    {/* External Link Button */}
                                     <a href={question.externalLink} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto">
                                         <Button variant="neon" size="sm" className="w-full">
                                             <Play size={14} className="mr-2" /> Solve Now
                                         </Button>
                                     </a>
 
+                                    {/* Mark as Done Button */}
                                     <Button
                                         variant={question.status === 'completed' ? "outline" : "secondary"}
                                         size="sm"
