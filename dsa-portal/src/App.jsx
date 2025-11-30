@@ -37,34 +37,12 @@ import { MockDataProvider } from './context/MockDataContext';
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Seeding Script (Temporary)
-import { addPerformanceHistory } from './seed/addPerformanceHistory';
-
 function App() {
   return (
     // Router wraps the entire application to enable navigation
     <Router>
       {/* MockDataProvider provides global state/mock data to children */}
       <MockDataProvider>
-
-        {/* TEMPORARY: Button to seed performance history data */}
-        <button
-          onClick={addPerformanceHistory}
-          style={{
-            position: 'fixed',
-            top: '10px',
-            left: '10px',
-            zIndex: 9999,
-            padding: '10px 20px',
-            backgroundColor: '#f00',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Upload Performance Data
-        </button>
 
         <Routes>
           {/* Public Routes */}
