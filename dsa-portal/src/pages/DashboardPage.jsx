@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Progress } from '../components/ui/progress';
 import { Button } from '../components/ui/button';
 import PerformanceOverview from '../components/PerformanceOverview';
+import AITopicAnalysis from '../components/dashboard/AITopicAnalysis';
 
 // Data / Utils
 import { recommendedQuestions } from '../mockData'; // Keeping mock recommendations for now
@@ -271,8 +272,9 @@ const DashboardPage = () => {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
 
                 {/* Performance Overview Graph (Recharts) */}
-                <div className="col-span-4">
+                <div className="col-span-4 space-y-6">
                     <PerformanceOverview data={performanceData} />
+                    <AITopicAnalysis />
                 </div>
 
                 {/* Topic Mastery Progress */}
