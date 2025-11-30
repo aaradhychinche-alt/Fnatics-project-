@@ -88,9 +88,30 @@ export const leaderboardData = [
 ];
 
 export const recommendedQuestions = [
-  { id: 1, title: "Merge K Sorted Lists", difficulty: "Hard", topic: "Heap", acceptance: "45%" },
-  { id: 2, title: "Longest Palindromic Substring", difficulty: "Medium", topic: "DP", acceptance: "32%" },
-  { id: 3, title: "Valid Parentheses", difficulty: "Easy", topic: "Stack", acceptance: "80%" },
+  { 
+    id: 1, 
+    title: "Merge K Sorted Lists", 
+    difficulty: "Hard", 
+    topic: "Heap", 
+    acceptance: "45%",
+    link: "https://leetcode.com/problems/merge-k-sorted-lists/"
+  },
+  { 
+    id: 2, 
+    title: "Longest Palindromic Substring", 
+    difficulty: "Medium", 
+    topic: "DP", 
+    acceptance: "32%",
+    link: "https://leetcode.com/problems/longest-palindromic-substring/"
+  },
+  { 
+    id: 3, 
+    title: "Valid Parentheses", 
+    difficulty: "Easy", 
+    topic: "Stack", 
+    acceptance: "80%",
+    link: "https://leetcode.com/problems/valid-parentheses/"
+  },
 ];
 
 export const topics = [

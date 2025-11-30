@@ -305,23 +305,34 @@ const DashboardPage = () => {
                     <CardContent>
                         <div className="space-y-4">
                             {recommendedQuestions.map((q) => (
-                                <div key={q.id} className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-accent/50 transition-colors group cursor-pointer">
-                                    <div className="space-y-1">
-                                        <div className="font-medium group-hover:text-primary transition-colors">{q.title}</div>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <span className={`px-2 py-0.5 rounded-full bg-secondary ${q.difficulty === 'Hard' ? 'text-red-400' :
-                                                q.difficulty === 'Medium' ? 'text-yellow-400' : 'text-green-400'
-                                                }`}>
-                                                {q.difficulty}
-                                            </span>
-                                            <span>{q.topic}</span>
-                                            <span>• Acceptance: {q.acceptance}</span>
+                                // Render recommended questions as clickable cards
+                                // Opens the LeetCode problem in a new tab
+                                <a
+                                    key={q.id}
+                                    href={q.link || `https://leetcode.com/problems/${q.title.toLowerCase().replace(/\s+/g, '-')}/`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block"
+                                >
+                                    <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-accent/50 transition-colors group cursor-pointer">
+                                        <div className="space-y-1">
+                                            <div className="font-medium group-hover:text-primary transition-colors">{q.title}</div>
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                {/* Difficulty badge rendering */}
+                                                <span className={`px-2 py-0.5 rounded-full bg-secondary ${q.difficulty === 'Hard' ? 'text-red-400' :
+                                                    q.difficulty === 'Medium' ? 'text-yellow-400' : 'text-green-400'
+                                                    }`}>
+                                                    {q.difficulty}
+                                                </span>
+                                                <span>{q.topic}</span>
+                                                <span>• Acceptance: {q.acceptance}</span>
+                                            </div>
                                         </div>
+                                        <Button size="icon" variant="ghost">
+                                            <ArrowUpRight size={18} />
+                                        </Button>
                                     </div>
-                                    <Button size="icon" variant="ghost">
-                                        <ArrowUpRight size={18} />
-                                    </Button>
-                                </div>
+                                </a>
                             ))}
                         </div>
                     </CardContent>
