@@ -76,16 +76,15 @@ const PerformanceOverview = ({ data }) => {
 
             <div className="flex-1 min-h-0 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        {/* Gradients for lines */}
+                    <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
-                            <linearGradient id="userGradient" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor="#8B5CF6" />
-                                <stop offset="100%" stopColor="#6366F1" />
+                            <linearGradient id="colorSolved" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
                             </linearGradient>
-                            <linearGradient id="avgGradient" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor="#EC4899" />
-                                <stop offset="100%" stopColor="#F43F5E" />
+                            <linearGradient id="colorAvg" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#EC4899" stopOpacity={0.1} />
+                                <stop offset="95%" stopColor="#EC4899" stopOpacity={0} />
                             </linearGradient>
                         </defs>
 
@@ -100,7 +99,7 @@ const PerformanceOverview = ({ data }) => {
                             tickFormatter={(value) => {
                                 try {
                                     const date = new Date(value);
-                                    if (isNaN(date.getTime())) return value; // Return original if invalid
+                                    if (isNaN(date.getTime())) return value;
                                     return date.toLocaleDateString('en-US', { weekday: 'short' });
                                 } catch (e) {
                                     return value;
@@ -116,29 +115,28 @@ const PerformanceOverview = ({ data }) => {
 
                         <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} />
 
-                        {/* User Line */}
-                        <Line
-                            type="monotone"
-                            dataKey="solved"
-                            stroke="url(#userGradient)"
-                            strokeWidth={3}
-                            dot={{ r: 4, fill: '#1e1b4b', stroke: '#8B5CF6', strokeWidth: 2 }}
-                            activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#fff', strokeWidth: 2, className: "animate-pulse" }}
-                            animationDuration={1500}
-                        />
-
-                        {/* Class Average Line */}
-                        <Line
+                        {/* Class Average Area & Line */}
+                        <Area
                             type="monotone"
                             dataKey="avg"
-                            stroke="url(#avgGradient)"
+                            stroke="#EC4899"
                             strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={false}
-                            activeDot={{ r: 4, fill: '#EC4899' }}
-                            animationDuration={1500}
+                            fillOpacity={1}
+                            fill="url(#colorAvg)"
                         />
-                    </LineChart>
+
+                        {/* User Performance Area & Line */}
+                        <Area
+                            type="monotone"
+                            dataKey="solved"
+                            stroke="#8B5CF6"
+                            strokeWidth={4}
+                            fillOpacity={1}
+                            fill="url(#colorSolved)"
+                            dot={{ r: 4, fill: '#1e1b4b', stroke: '#8B5CF6', strokeWidth: 2 }}
+                            activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#fff', strokeWidth: 2 }}
+                        />
+                    </AreaChart>
                 </ResponsiveContainer>
             </div>
         </div>
