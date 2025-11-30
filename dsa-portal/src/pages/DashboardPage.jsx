@@ -30,7 +30,7 @@ import PerformanceOverview from '../components/PerformanceOverview';
 
 // Data / Utils
 import { recommendedQuestions } from '../mockData'; // Keeping mock recommendations for now
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebase-config";
 
 // Streak Calendar Component (Internal helper)
@@ -136,6 +136,7 @@ const DashboardPage = () => {
     const [performanceData, setPerformanceData] = useState([]);
 
     // Helper to generate mock performance data if none exists
+    // Generates a 7-day dataset with realistic values
     const generateMockPerformanceData = () => {
         const data = [];
         const today = new Date();
@@ -143,9 +144,9 @@ const DashboardPage = () => {
             const d = new Date(today);
             d.setDate(d.getDate() - i);
             data.push({
-                date: d.toISOString().split('T')[0],
-                solved: Math.floor(Math.random() * 10) + 1,
-                avg: Math.floor(Math.random() * 5) + 3
+                date: d.toISOString().split('T')[0], // YYYY-MM-DD
+                solved: Math.floor(Math.random() * 15) + 5, // Random solved count 5-20
+                avg: Math.floor(Math.random() * 20) + 40 // Random avg 40-60
             });
         }
         return data;
@@ -158,6 +159,7 @@ const DashboardPage = () => {
                 try {
                     const docRef = doc(db, "users", auth.currentUser.uid);
                     const docSnap = await getDoc(docRef);
+
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         console.log("Dashboard stats loaded:", data);
@@ -185,26 +187,31 @@ const DashboardPage = () => {
                         }
 
                         // Update Performance History
-                        // Expecting 'performance' array in Firestore: [{ date, solved, avg }, ...]
-                        // If 'performanceHistory' object exists (from previous seed), we can try to convert it or just use mock for now if 'performance' array is missing.
-                        if (data.performance && Array.isArray(data.performance)) {
-                            setPerformanceData(data.performance);
-                        } else if (data.performanceHistory) {
-                            // Fallback: Convert old object format to array if needed, or just use mock
-                            // Object format was: { "2025-11-21": 80 } (score)
-                            // We need { date, solved, avg }
-                            const converted = Object.entries(data.performanceHistory).map(([date, score]) => ({
-                                date,
-                                solved: Math.floor(score / 10), // Mock solved count derived from score
-                                avg: Math.floor(Math.random() * 10) // Mock avg
-                            })).sort((a, b) => new Date(a.date) - new Date(b.date));
-                            setPerformanceData(converted);
+                        // Logic: Check if 'performance' array exists and has data.
+                        // If not, generate mock data AND save it to Firestore for persistence.
+                        if (data.performance && Array.isArray(data.performance) && data.performance.length > 0) {
+                            // Sort by date just in case
+                            const sortedData = [...data.performance].sort((a, b) => new Date(a.date) - new Date(b.date));
+                            setPerformanceData(sortedData);
                         } else {
-                            // No data found, use mock
-                            setPerformanceData(generateMockPerformanceData());
+                            console.log("No performance data found. Generating fallback and saving to Firestore...");
+                            const fallbackData = generateMockPerformanceData();
+
+                            // Update local state immediately
+                            setPerformanceData(fallbackData);
+
+                            // Persist to Firestore
+                            try {
+                                await updateDoc(docRef, {
+                                    performance: fallbackData
+                                });
+                                console.log("Fallback performance data saved to Firestore.");
+                            } catch (err) {
+                                console.error("Error saving fallback data:", err);
+                            }
                         }
                     } else {
-                        // New user or no doc, use mock
+                        // New user or no doc, use mock but can't save if doc doesn't exist (should exist from login)
                         setPerformanceData(generateMockPerformanceData());
                     }
                 } catch (error) {
