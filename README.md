@@ -126,7 +126,7 @@ performanceHistory	Activity graph data
 Paste your link here:
 
 👉 Live Website:
-https://fnatics-project.vercel.app/
+https://fnatics-project-jvzk.vercel.app/
 
 👉 GitHub Repo:
 https://github.com/aaradhychinche-alt/Fnatics-project-
